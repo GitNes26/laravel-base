@@ -47,13 +47,13 @@ class MenuSeeder extends Seeder
         $menuGroups = [
             [
                 'menu' => 'Principal',
-                'icon' => 'WidgetsRounded',
+                'icon' => 'GradeRounded',
                 'caption' => '',
                 'items' => [
                     [
                         'menu' => 'Tablero',
                         'url' => '/app',
-                        'icon' => 'DashboardCustomizeRounded',
+                        'icon' => 'DashboardRounded',
                     ],
                     [
                         'menu' => 'Noticias',
