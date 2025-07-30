@@ -91,6 +91,46 @@ class Controller extends BaseController
         }
     }
 
+
+    /**
+     * Valida dinámicamente los campos recibidos según las reglas y mensajes personalizados.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @param string $table Nombre de la tabla a validar.
+     * @param array $fields Array de campos a validar, cada campo es un array con 'field', 'label', 'rules' y 'messages'.
+     * Ejemplo: [
+     *     ['field' => 'username', 'label' => 'Nombre de usuario', 'rules' => ['required', 'string'], 'messages' => ['required' => 'El campo username es obligatorio.', 'string' => 'El nombre de usuario debe ser texto.']]...
+     * @param int|null $id ID del registro a excluir de la validación (para actualizaciones).
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    public function validateAvailableData(Request $request, string $table, array $fields, $id = null)
+    {
+        $rules = [];
+        $messages = [];
+
+        foreach ($fields as $field) {
+            $field = $item['field'];
+            $label = $item['label'] ?? $field;
+            $extraRules = $item['rules'] ?? [];
+            $extraMessages = $item['messages'] ?? [];
+
+            $fieldRules = array_merge(
+                ['required'],
+                $extraRules,
+                ["unique:$table,$field," . ($id ?? 'NULL') . ',id,active,1']
+            );
+            $rules[$field] = $fieldRules;
+
+            $messages["$field.required"] = "El campo $label es obligatorio.";
+            $messages["$field.unique"] = "$label no está disponible! - $request[$field] ya existe, intenta con uno diferente.";
+            foreach ($extraMessages as $rule => $msg) {
+                $messages["$field.$rule"] = $msg;
+            }
+        }
+
+        return \Validator::make($request->all(), $rules, $messages);
+    }
+
     /**
      * Funcion para verificar que los datos NO se dupliquen en las tablas correspondientes.
      * 
