@@ -113,6 +113,7 @@ class SituationController extends Controller
             //     $response->data = $duplicate;
             //     return response()->json($response);
             // }
+            
             $folio = $this->getLastFolio($request->letters);
             // var_dump($folio);
             $numFolio = 0;

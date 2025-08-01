@@ -85,10 +85,25 @@ class DepartmentController extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $duplicate = $this->validateAvailableData($request->letters, $request->department, $id);
-            if ($duplicate["result"] == true) {
-                $response->data = $duplicate;
-                return response()->json($response);
+            $validator = $this->validateAvailableData($request, 'departments', [
+                [
+                    'field' => 'letters',
+                    'label' => 'Siglas del departamento',
+                    'rules' => [],
+                    'messages' => []
+                ],
+                [
+                    'field' => 'department',
+                    'label' => 'Correo electrónico',
+                    'rules' => [],
+                    'messages' => []
+                ]
+            ], $id);
+            if ($validator->fails()) {
+                $response->data = ObjResponse::ErrorResponse();
+                $response->data["message"] = "Error de validación";
+                $response->data["errors"] = $validator->errors();
+                return response()->json($response, 422);
             }
 
             $department = Department::find($id);
@@ -217,21 +232,5 @@ class DepartmentController extends Controller
             $response->data = ObjResponse::CatchResponse($msg);
         }
         return response()->json($response, $response->data["status_code"]);
-    }
-
-
-    /**
-     * Funcion para validar que campos no deben de duplicarse sus valores.
-     * 
-     * @return ObjRespnse|false
-     */
-    private function validateAvailableData($letters, $department, $id)
-    {
-        // #VALIDACION DE DATOS REPETIDOS
-        $duplicate = $this->checkAvailableData('departments', 'letters', $letters, 'El nombre del departamento', 'letters', $id, null);
-        if ($duplicate["result"] == true) return $duplicate;
-        $duplicate = $this->checkAvailableData('departments', 'department', $department, 'El nombre del departamento', 'department', $id, null);
-        if ($duplicate["result"] == true) return $duplicate;
-        return array("result" => false);
     }
 }

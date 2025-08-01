@@ -172,10 +172,22 @@ class MenuController extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            // $duplicate = $this->validateAvailableData($request->menu, $id);
-            // if ($duplicate["result"] == true) {
-            //     return $duplicate;
-            // }
+            $validator = $this->validateAvailableData($request, 'menus', [
+                [
+                    'field' => 'menu',
+                    'label' => 'Menú',
+                    'rules' => ['string'],
+                    'messages' => [
+                        'string' => 'El menú debe ser texto.',
+                    ]
+                ]
+            ], $id);
+            if ($validator->fails()) {
+                $response->data = ObjResponse::ErrorResponse();
+                $response->data["message"] = "Error de validación";
+                $response->data["errors"] = $validator->errors();
+                return response()->json($response, 422);
+            }
 
             $menu = Menu::find($id);
             if (!$menu) $menu = new Menu();
@@ -268,18 +280,4 @@ class MenuController extends Controller
         return response()->json($response, $response->data["status_code"]);
     }
     //#endregion CRUD
-
-
-    /**
-     * Funcion para validar que campos no deben de duplicarse sus valores.
-     * 
-     * @return ObjRespnse|false
-     */
-    private function validateAvailableData($menu, $id)
-    {
-        // #VALIDACION DE DATOS REPETIDOS
-        $duplicate = $this->checkAvailableData('menus', 'menu', $menu, 'El nombre del menú', 'menu', $id, null);
-        if ($duplicate["result"] == true) return $duplicate;
-        return array("result" => false);
-    }
 }

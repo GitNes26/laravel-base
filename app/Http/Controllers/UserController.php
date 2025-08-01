@@ -112,12 +112,6 @@ class UserController extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            // $duplicate = $this->validateAvailableData($request->username, $request->email, $request->employee_id, $id);
-            // if ($duplicate["result"] == true) {
-            //     $response->data = $duplicate;
-            //     return response()->json($response);
-            // }
-
             $validator = $this->validateAvailableData($request, 'users', [
                 [
                     'field' => 'username',

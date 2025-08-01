@@ -76,10 +76,31 @@ class PersonalInfoController extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $duplicate = $this->validateAvailableData($request->email, $request->phone, $id);
-            if ($duplicate["result"] == true) {
-                $response->data = $duplicate;
-                return response()->json($response);
+            $validator = $this->validateAvailableData($request, 'personal_info', [
+                [
+                    'field' => 'email',
+                    'label' => 'Correo electrónico',
+                    'rules' => ['email'],
+                    'messages' => [
+                        'email' => 'El correo electrónico no es válido.',
+                    ]
+                ],
+                [
+                    'field' => 'phone',
+                    'label' => 'Número telefónico',
+                    'rules' => ['string', 'max:10', 'min:10'],
+                    'messages' => [
+                        'string' => 'El número telefónico debe ser texto.',
+                        'max' => 'El número telefónico no puede tener más de 10 caracteres.',
+                        'min' => 'El número telefónico debe tener al menos 10 caracteres.',
+                    ]
+                ]
+            ], $id);
+            if ($validator->fails()) {
+                $response->data = ObjResponse::ErrorResponse();
+                $response->data["message"] = "Error de validación";
+                $response->data["errors"] = $validator->errors();
+                return response()->json($response, 422);
             }
 
             $personal_info = PersonalInfo::find($id);
@@ -211,21 +232,5 @@ class PersonalInfoController extends Controller
             $response->data = ObjResponse::CatchResponse($msg);
         }
         return response()->json($response, $response->data["status_code"]);
-    }
-
-
-    /**
-     * Funcion para validar que campos no deben de duplicarse sus valores.
-     *
-     * @return ObjRespnse|false
-     */
-    private function validateAvailableData($email, $phone, $id)
-    {
-        // #VALIDACION DE DATOS REPETIDOS
-        $duplicate = $this->checkAvailableData('personal_info', 'email', $email, 'El correo electrónico', 'email', $id, null);
-        if ($duplicate["result"] == true) return $duplicate;
-        $duplicate = $this->checkAvailableData('personal_info', 'phone', $phone, 'El número telefonico', 'phone', $id, null);
-        if ($duplicate["result"] == true) return $duplicate;
-        return array("result" => false);
     }
 }

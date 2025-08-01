@@ -76,10 +76,31 @@ class EmployeeController extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $duplicate = $this->validateAvailableData($request->payroll_number, $request->cellphone, $id);
-            if ($duplicate["result"] == true) {
-                $response->data = $duplicate;
-                return response()->json($response);
+            $validator = $this->validateAvailableData($request, 'employees', [
+                [
+                    'field' => 'payroll_number',
+                    'label' => 'Número de nómina',
+                    'rules' => ['integer'],
+                    'messages' => [
+                        'integer' => 'El número de nómina debe ser un número entero.',
+                    ]
+                ],
+                [
+                    'field' => 'cellphone',
+                    'label' => 'Teléfono celular',
+                    'rules' => ['string', 'max:10', 'min:10'],
+                    'messages' => [
+                        'string' => 'El número celular debe ser texto.',
+                        'max' => 'El número celular no puede tener más de 10 caracteres.',
+                        'min' => 'El número celular debe tener al menos 10 caracteres.',
+                    ]
+                ]
+            ], $id);
+            if ($validator->fails()) {
+                $response->data = ObjResponse::ErrorResponse();
+                $response->data["message"] = "Error de validación";
+                $response->data["errors"] = $validator->errors();
+                return response()->json($response, 422);
             }
 
             $employee = Employee::find($id);
@@ -210,21 +231,5 @@ class EmployeeController extends Controller
             $response->data = ObjResponse::CatchResponse($msg);
         }
         return response()->json($response, $response->data["status_code"]);
-    }
-
-
-    /**
-     * Funcion para validar que campos no deben de duplicarse sus valores.
-     * 
-     * @return ObjRespnse|false
-     */
-    private function validateAvailableData($payroll_number, $cellphone, $id)
-    {
-        // #VALIDACION DE DATOS REPETIDOS
-        $duplicate = $this->checkAvailableData('employees', 'payroll_number', $payroll_number, 'El numero de nómina', 'payroll_number', $id, null);
-        if ($duplicate["result"] == true) return $duplicate;
-        $duplicate = $this->checkAvailableData('employees', 'cellphone', $cellphone, 'El número celular del empleado', 'cellphone', $id, null);
-        if ($duplicate["result"] == true) return $duplicate;
-        return array("result" => false);
     }
 }

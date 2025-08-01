@@ -8,6 +8,7 @@ use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Models\ObjResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -43,7 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
             try {
                 $menu = Menu::where('url', $request->url)->where('active', 1)->select("id")->first();
                 $response->data = ObjResponse::SuccessResponse();
-                $response->data["message"] = 'Peticion satisfactoria | Lista de menus.';
+                $response->data["message"] = 'Peticion satisfactoria | validar inicio de sesión.';
                 $response->data["result"] = $menu;
             } catch (\Exception $ex) {
                 $response->data = ObjResponse::CatchResponse($ex->getMessage());

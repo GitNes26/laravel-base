@@ -76,10 +76,21 @@ class RoleController extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $duplicate = $this->validateAvailableData($request->role, $id);
-            if ($duplicate["result"] == true) {
-                $response->data = $duplicate;
-                return response()->json($response);
+            $validator = $this->validateAvailableData($request, 'roles', [
+                [
+                    'field' => 'role',
+                    'label' => 'Nombre del rol',
+                    'rules' => ['string'],
+                    'messages' => [
+                        'string' => 'El nombre del rol debe ser texto.',
+                    ]
+                ]
+            ], $id);
+            if ($validator->fails()) {
+                $response->data = ObjResponse::ErrorResponse();
+                $response->data["message"] = "Error de validación";
+                $response->data["errors"] = $validator->errors();
+                return response()->json($response, 422);
             }
 
             $rol = Role::find($id);
@@ -241,19 +252,5 @@ class RoleController extends Controller
             $response->data = ObjResponse::CatchResponse($msg);
         }
         return response()->json($response, $response->data["status_code"]);
-    }
-
-
-    /**
-     * Funcion para validar que campos no deben de duplicarse sus valores.
-     * 
-     * @return ObjRespnse|false
-     */
-    private function validateAvailableData($role, $id)
-    {
-        // #VALIDACION DE DATOS REPETIDOS
-        $duplicate = $this->checkAvailableData('roles', 'role', $role, 'El nombre de rol', 'role', $id, null);
-        if ($duplicate["result"] == true) return $duplicate;
-        return array("result" => false);
     }
 }

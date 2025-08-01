@@ -92,10 +92,29 @@ class AuthController extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $duplicate = $this->validateAvailableData($request->username, $request->email, null);
-            if ($duplicate["result"] == true) {
-                $response->data = $duplicate;
-                return response()->json($response);
+            $validator = $this->validateAvailableData($request, 'users', [
+                [
+                    'field' => 'username',
+                    'label' => 'Nombre de usuario',
+                    'rules' => ['string'],
+                    'messages' => [
+                        'string' => 'El nombre de usuario debe ser texto.',
+                    ]
+                ],
+                [
+                    'field' => 'email',
+                    'label' => 'Correo electrónico',
+                    'rules' => ['email'],
+                    'messages' => [
+                        'email' => 'El correo electrónico no es válido.',
+                    ]
+                ]
+            ], $id);
+            if ($validator->fails()) {
+                $response->data = ObjResponse::ErrorResponse();
+                $response->data["message"] = "Error de validación";
+                $response->data["errors"] = $validator->errors();
+                return response()->json($response, 422);
             }
 
             $new_user = User::create([
@@ -149,21 +168,5 @@ class AuthController extends Controller
             $response->data = ObjResponse::CatchResponse($msg);
         }
         return response()->json($response, $response->data["status_code"]);
-    }
-
-
-    /**
-     * Funcion para validar que campos no deben de duplicarse sus valores.
-     * 
-     * @return ObjRespnse|false
-     */
-    private function validateAvailableData($username, $email, $id)
-    {
-        // #VALIDACION DE DATOS REPETIDOS
-        $duplicate = $this->checkAvailableData('users', 'username', $username, 'El nombre de usuario', 'username', $id, null);
-        if ($duplicate["result"] == true) return $duplicate;
-        $duplicate = $this->checkAvailableData('users', 'email', $email, 'El correo electrónico', 'email', $id, null);
-        if ($duplicate["result"] == true) return $duplicate;
-        return array("result" => false);
     }
 }
