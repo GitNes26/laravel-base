@@ -110,10 +110,10 @@ class Controller extends BaseController
         $messages = [];
 
         foreach ($fields as $field) {
-            $field = $item['field'];
-            $label = $item['label'] ?? $field;
-            $extraRules = $item['rules'] ?? [];
-            $extraMessages = $item['messages'] ?? [];
+            $field = $field['field'];
+            $label = $field['label'] ?? $field;
+            $extraRules = $field['rules'] ?? [];
+            $extraMessages = $field['messages'] ?? [];
 
             $fieldRules = array_merge(
                 ['required'],

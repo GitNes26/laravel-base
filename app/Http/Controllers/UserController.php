@@ -145,7 +145,8 @@ class UserController extends Controller
 
             $user = User::find($id);
             if (!$user) $user = new User();
-            $user->fill($request->only(['email', 'username', 'password', 'role_id', 'employee_id']));
+            $user->fill($request->only(['email', 'username', 'password', 'role_id']));
+            if ((int)$request->employee_id > 0) $user->employee_id = $request->employee_id;
             if ((bool)$request->changePassword && strlen($request->password) > 0) $user->password = Hash::make($request->password);
             $user->save();
 
