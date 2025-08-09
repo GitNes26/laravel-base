@@ -223,7 +223,7 @@ class UserController extends Controller
      * "Activar o Desactivar" (cambiar estado activo=1/0) user.
      *
      * @param  int $id
-     * @param  int $active
+     * @param  string $active
      * @return \Illuminate\Http\Response $response
      */
     public function disEnable(Response $response, Int $id, string $active)
@@ -235,7 +235,7 @@ class UserController extends Controller
                     'active' => $active === "reactivar" ? 1 : 0
                 ]);
 
-            $description = $active == "0" ? 'desactivado' : 'reactivado';
+            $description = $active == "reactivar" ? 'reactivado' : 'desactivado';
             $response->data = ObjResponse::SuccessResponse();
             $response->data["message"] = "peticion satisfactoria | user $description.";
             $response->data["alert_text"] = "Usuario $description";
