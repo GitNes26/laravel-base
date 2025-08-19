@@ -53,7 +53,7 @@ class Employee extends Model
      */
     public function position()
     {   //primero se declara FK y despues la PK del modelo asociado
-        return $this->hasOne(Position::class, 'position_id', 'id');
+        return $this->hasOne(Position::class, 'id');
     }
 
     /**
@@ -61,24 +61,23 @@ class Employee extends Model
      */
     public function department()
     {   //primero se declara FK y despues la PK del modelo asociado
-        return $this->hasOne(Department::class, 'department_id', 'id');
+        return $this->hasOne(Department::class, 'id');
     }
 
-    // /**
-    //  * Obtener puesto asociado con el empleado.
-    //  */
-    // public function workstation()
-    // {   //primero se declara FK y despues la PK del modelo asociado
-    //     return $this->belongsTo(Workstation::class, 'workstation_id', 'id');
-    // }
+    public function user()
+    {   //primero se declara FK y despues la PK del modelo asociado
+        return $this->hasOne(User::class, 'employee_id');
+    }
 
-    // /**
-    //  * Obtener usuario asociado con el empleado.
-    //  */
-    // public function user()
-    // {   //primero se declara FK y despues la PK del modelo asociado
-    //     return $this->belongsTo(User::class, 'user_id', 'id');
-    // }
+    public function getFullNameAttribute()
+    {
+        return trim("{$this->name} {$this->plast_name} {$this->mlast_name}");
+    }
+
+    public function getFullNameReverseAttribute()
+    {
+        return trim("{$this->plast_name} {$this->mlast_name} {$this->name}");
+    }
 
     /**
      * Valores defualt para los campos especificados.
@@ -87,4 +86,10 @@ class Employee extends Model
     // protected $attributes = [
     //     'active' => true,
     // ];
+
+    /**
+     * Accesores adicionales para el modelo.
+     * @var array
+     */
+    protected $appends = ['full_name', 'full_name_reverse'];
 }

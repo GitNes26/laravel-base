@@ -24,7 +24,8 @@ class EmployeeController extends Controller
         try {
             $auth = Auth::user();
             // $list = VW_Employee::orderBy('id', 'desc');
-            $list = Employee::with(['position', 'department'])
+            // $list = Employee::orderBy('id', 'desc');
+            $list = Employee::with(['position', 'department', 'user'])
                 ->orderBy('id', 'desc');
             if ($auth->role_id > 2) $list = $list->where("active", true);
             $list = $list->get();
@@ -49,7 +50,7 @@ class EmployeeController extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $list = VW_Employee::where('active', true)
+            $list = Employee::where('active', true)
                 ->select('id as id', DB::raw("CONCAT(payroll_number,' - ',full_name) as label"))
                 ->orderBy('full_name', 'asc')->get();
 
@@ -137,7 +138,7 @@ class EmployeeController extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $employee = VW_Employee::find($id);
+            $employee = Employee::find($id);
             if ($internal) return $employee;
 
             $response->data = ObjResponse::SuccessResponse();

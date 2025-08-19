@@ -25,7 +25,10 @@ class UserController extends Controller
         $response->data = ObjResponse::DefaultResponse();
         try {
             $roleAuth = Auth::user()->role_id;
-            $list = VW_User::where("role_id", ">=", $roleAuth)
+            // $list = VW_User::where("role_id", ">=", $roleAuth)
+            // ->orderBy('id', 'desc');
+            $list = User::with('role', 'employee')
+                ->where("role_id", ">=", $roleAuth)
                 ->orderBy('id', 'desc');
             if ($roleAuth > 1) $list = $list->where("active", true);
             $list = $list->get();
@@ -57,7 +60,7 @@ class UserController extends Controller
             $signo = "=";
             $signo = $role_id == 2 && $roleAuth == 1 ? "<=" : "=";
 
-            $list = VW_User::where('active', true)->where("role_id", $signo, $role_id)
+            $list = User::where('active', true)->where("role_id", $signo, $role_id)
                 ->select('id as id', 'username as label')
                 ->orderBy('id', 'desc')
                 ->get();
@@ -83,7 +86,7 @@ class UserController extends Controller
     {
         $response->data = ObjResponse::DefaultResponse();
         try {
-            $list = VW_User::where('active', true)
+            $list = User::where('active', true)
                 ->select('id as id', 'username as label', 'role_id', 'role')
                 ->orderBy('username', 'asc')->get();
 
@@ -176,7 +179,7 @@ class UserController extends Controller
         try {
             // $id_user = $id;
             // if ($internal == 1) $id_user = $request->page_index;
-            $user = VW_User::find($id);
+            $user = User::find($id);
 
             if ($internal) return $user;
 
