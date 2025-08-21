@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class ObjResponse extends Model
 {
@@ -40,7 +41,7 @@ class ObjResponse extends Model
     public static function CatchResponse($message)
     {
         $message ?? "Ocurrio un error, verifica tus datos.";
-        error_log($message);
+        Log::error($message);
         $response = [
             "status_code" => 400,
             "status" => false,

@@ -113,7 +113,7 @@ class SituationController extends Controller
             //     $response->data = $duplicate;
             //     return response()->json($response);
             // }
-            
+
             $folio = $this->getLastFolio($request->letters);
             // var_dump($folio);
             $numFolio = 0;
@@ -272,7 +272,7 @@ class SituationController extends Controller
                     'active' => $active === "reactivar" ? 1 : 0
                 ]);
 
-            $description = $active == "0" ? 'desactivado' : 'reactivado';
+            $description = $active == "reactivar" ? 'reactivado' : 'desactivado';
             $response->data = ObjResponse::SuccessResponse();
             $response->data["message"] = "peticion satisfactoria | situacion $description.";
             $response->data["alert_text"] = "Situación $description";

@@ -140,10 +140,9 @@ class UserController extends Controller
                 ],
             ], $id);
             if ($validator->fails()) {
-                $response->data = ObjResponse::ErrorResponse();
                 $response->data["message"] = "Error de validación";
                 $response->data["errors"] = $validator->errors();
-                return response()->json($response, 422);
+                return response()->json($response);
             }
 
             $user = User::find($id);

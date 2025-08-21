@@ -97,10 +97,10 @@ class PersonalInfoController extends Controller
                 ]
             ], $id);
             if ($validator->fails()) {
-                $response->data = ObjResponse::ErrorResponse();
+                $response->data = ObjResponse::CatchResponse();
                 $response->data["message"] = "Error de validación";
                 $response->data["errors"] = $validator->errors();
-                return response()->json($response, 422);
+                return response()->json($response);
             }
 
             $personal_info = PersonalInfo::find($id);
@@ -194,7 +194,7 @@ class PersonalInfoController extends Controller
                     'active' => $active === "reactivar" ? 1 : 0
                 ]);
 
-            $description = $active == "0" ? 'desactivada' : 'reactivada';
+            $description = $active == "reactivar" ? 'reactivada' : 'desactivada';
             $response->data = ObjResponse::SuccessResponse();
             $response->data["message"] = "peticion satisfactoria | informacion personal $description.";
             $response->data["alert_text"] = "Información Personal $description";
