@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\RoleController;
@@ -133,3 +134,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ----------------- RUTAS BASICAS -----------------
 });
+
+Route::post('/notifications', [NotificationController::class, 'store'])->middleware('auth:sanctum');
